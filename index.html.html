@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>| 𝓜𝓪𝓼𝓽𝓮𝓻𝓼-Dark Side</title>
+    <style>
+        :root {
+            --primary: #00ff88;
+            --gold: #ffd700;
+            --dev-blue: #00d4ff;
+            --bg-dark: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg-dark);
+            color: white;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        #matrix-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 5%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            position: fixed;
+            top: 0; width: 90%;
+            z-index: 1000;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .nav-logo { display: flex; align-items: center; gap: 15px; text-decoration: none; }
+        .nav-logo img { height: 50px; filter: drop-shadow(0 0 8px var(--primary)); }
+        .nav-logo span { color: var(--primary); font-weight: bold; font-size: 26px; }
+
+        nav .links a { color: white; margin-left: 20px; text-decoration: none; font-weight: 500; transition: 0.3s; }
+        nav .links a:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle, rgba(0,255,136,0.15) 0%, rgba(0,0,0,0) 70%);
+        }
+
+        .hero .hero-logo {
+            width: 450px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 30px var(--primary));
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .hero h1 { font-size: clamp(60px, 12vw, 100px); color: var(--primary); text-shadow: 0 0 30px rgba(0, 255, 136, 0.5); margin: 0; }
+        .hero p { font-size: 22px; color: #aaa; margin: 20px 0; letter-spacing: 3px; }
+        
+        .hero button { 
+            padding: 18px 55px; 
+            background: transparent; 
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 35px; 
+            font-weight: bold; 
+            font-size: 20px; 
+            cursor: pointer; 
+            transition: 0.4s; 
+        }
+        .hero button:hover { background: var(--primary); color: black; box-shadow: 0 0 30px var(--primary); }
+
+        section { padding: 100px 5% 50px; text-align: center; }
+        .neon-title { font-size: 50px; color: var(--primary); text-shadow: 0 0 15px var(--primary); margin-bottom: 60px; }
+
+        /* --- القسم الجديد للألعاب --- */
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-top: 40px; }
+        .game-card { background: var(--card-bg); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0, 255, 136, 0.1); transition: 0.4s; }
+        .game-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 0 20px var(--primary); }
+        .game-card img { width: 100%; height: 200px; object-fit: cover; opacity: 0.8; }
+        .game-card h3 { padding: 15px; color: var(--primary); margin: 0; text-transform: uppercase; }
+
+        .video-container {
+            max-width: 850px;
+            margin: 0 auto;
+            border: 3px solid var(--primary);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            background: #000;
+        }
+        .video-container video { width: 100%; display: block; }
+
+        .hierarchy-container { display: flex; flex-direction: column; align-items: center; gap: 60px; }
+        .level { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; width: 100%; }
+        
+        .member-card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 25px; 
+            padding: 35px 20px; 
+            transition: 0.4s; 
+            cursor: pointer; 
+            width: 260px; 
+        }
+        .member-card:hover { transform: translateY(-15px); border-color: var(--primary); }
+        .member-card img { width: 120px; height: 120px; border-radius: 50%; margin-bottom: 20px; border: 4px solid #222; object-fit: cover; }
+        .member-card:hover img { border-color: var(--primary); box-shadow: 0 0 15px var(--primary); }
+
+        .rank-leader { border: 3px solid var(--gold) !important; width: 320px !important; }
+        .rank-coleader { border: 2px solid #ff9900 !important; }
+        .rank-dev { border: 2px solid var(--dev-blue) !important; }
+
+        .members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; margin-top: 50px; }
+        .info-box { background: var(--card-bg); padding: 40px; border-radius: 20px; max-width: 800px; margin: 0 auto; text-align: left; border-left: 5px solid var(--primary); }
+        
+        footer { text-align: center; padding: 60px; color: #555; border-top: 1px solid #111; }
+
+        @media (max-width: 768px) {
+            nav { padding: 10px 2%; width: 96%; }
+            .hero .hero-logo { width: 80%; }
+            .hero h1 { font-size: 50px; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<nav>
+    <a href="#home" class="nav-logo">
+        <img src="444.png" alt="Logo" onerror="this.style.display='none'">
+        <span>𝓜𝓪𝓼𝓽𝓮𝓻𝓼</span>
+    </a>
+    <div class="links">
+        <a href="#home">Home</a>
+        <a href="#staff">Staff</a>
+        <a href="#members">Members</a>
+        <a href="#games">Games</a>
+        <a href="#videos">Theater</a>
+        <a href="#rules">Rules</a>
+    </div>
+</nav>
+
+<div class="hero" id="home">
+    <img src="444.png" class="hero-logo" alt="Masters Logo" onerror="this.style.display='none'">
+    <h1>𝓜𝓪𝓼𝓽𝓮𝓻𝓼</h1>
+    <p>We are not players... We are 𝓜𝓪𝓼𝓽𝓮𝓻𝓼</p>
+    <button onclick="window.open('https://discord.gg/5Vxtez3m')">Join Our Kingdom</button>
+</div>
+
+<section id="staff">
+    <h2 class="neon-title">Clan Hierarchy</h2>
+    <div class="hierarchy-container">
+        <div class="level">
+            <div class="member-card rank-leader" onclick="window.open('https://discord.com/users/910204086928932894')">
+                <img src="43.webp" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                <span style="color:var(--gold); font-weight:bold; display:block; margin-bottom:10px;">ＬＥＡＤＥＲ</span>
+                <div style="font-size:22px; font-weight:bold;">—͟͟͞͞★Falfoula🌸</div>
+            </div>
+        </div>
+        <div class="level">
+            <div class="member-card rank-coleader" onclick="window.open('https://discord.com/users/1410044358131978280')">
+                <img src="25.webp" onerror="this.src='https://cdn.discordapp.com/embed/avatars/1.png'">
+                <span style="color:#ff9900; font-weight:bold; display:block; margin-bottom:10px;">𝑪𝑶-𝑳𝑬𝑨𝑫𝑬𝑹</span>
+                <div style="font-weight:bold;">—͟͟͞͞★ Issam</div>
+            </div>
+            <div class="member-card rank-coleader" onclick="window.open('https://discord.com/users/146984165939')">
+                <img src="??.png" onerror="this.src='https://cdn.discordapp.com/embed/avatars/2.png'">
+                <span style="color:#ff9900; font-weight:bold; display:block; margin-bottom:10px;">𝑪𝑶-𝑳𝑬𝑨𝑫𝑬𝑹</span>
+                <div style="font-weight:bold;">—͟͟͞͞★ ??</div>
+            </div>
+            <div class="member-card rank-dev" onclick="window.open('https://discord.com/users/1159527398098882703')">
+                <img src="151.jpg" onerror="this.src='https://cdn.discordapp.com/embed/avatars/4.png'">
+                <span style="color:var(--dev-blue); font-weight:bold; display:block; margin-bottom:10px;">𝙳𝙴𝚅𝙴𝙻𝙾𝙿𝙴Ｒ</span>
+                <div style="font-weight:bold;">—͟͟͞͞★CAPONI 🇩🇪</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="members">
+    <h2 class="neon-title">𝓜𝓔𝓜𝓑𝓔𝓡𝓢</h2>
+    <div class="members-grid" id="clanMembersGrid"></div>
+</section>
+
+<section id="games">
+    <h2 class="neon-title">Clan Games</h2>
+    <div class="games-grid">
+        <div class="game-card">
+            <img src="0009.webp">
+            <h3>Among Us</h3>
+        </div>
+        <div class="game-card">
+            <img src="008.webp">
+            <h3>Mafia</h3>
+        </div>
+        <div class="game-card">
+            <img src="007.webp">
+            <h3>Plato</h3>
+        </div>
+        <div class="game-card">
+            <img src="005.jpg">
+            <h3>Stumble Guys</h3>
+        </div>
+    </div>
+</section>
+
+<section id="videos">
+    <h2 class="neon-title">Masters Theater</h2>
+    <div class="video-container">
+        <video controls poster="444.png">
+            <source src="cave_setup.mp4" type="video/mp4">
+        </video>
+    </div>
+</section>
+
+<section id="rules">
+    <h2 class="neon-title">Clan Rules</h2>
+    <div class="info-box">
+        ➥1.l7tiram: Kolchi khaso y7taram kolchi...<br>
+        ➥2.Khalli ljaw dyal Clan positive w friendly.<br>
+        ➥3.recording: Ma trecordich chi wa7ed...<br>
+        ➥4.7tiram servre: Ila knti f ay tap f servre...<br>
+        ➥5.drama: Ma kanbghiwch drama...<br>
+        ➥6.Leader & co leaders: l9ararat dyalhom khas-hom yt7tarmo.<br>
+        ➥7.fker 9bel matsift: Ila l message dyalek y9der ydayee9...<br>
+        ➥8.khososiyat: Ma tanchrch ma3lomat khassa...<br>
+        ➥9.Ma t3alich sawtek w ma t9ta3ch hadra...<br>
+        ➥10.matjarch machakil dyal l clan bra lclan.<br>
+        ➥11.mninla3bo games m3a ba3diyatna, l3bo b calm w b respect.<br>
+        ➥12.derti mochkil bra lclan = 1ST warning, 2nd warning ====> Kick.<br>
+        ➥13.7na jayin lhna bach ntjam3o nda7ko wnhadro wn9sro la aktar.
+    </div>
+</section>
+
+<footer>© 2026 𝓜𝓪𝓼𝓽𝓮𝓻𝓼 Clan | Power & Honor</footer>
+
+<script>
+// Matrix Effect
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const chars = '01MASTERS';
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
+
+function drawMatrix() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00ff88';
+    ctx.font = fontSize + 'px monospace';
+    for (let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+    }
+}
+setInterval(drawMatrix, 50);
+
+// Dynamic Members
+const membersList = [
+    {name:"—͟͟͞͞★ 𝓘𝓻𝓲𝓼'𝓼🦌",id:"1442639433277898914",avatar:"41.webp"},
+    {name:"—͟͟͞͞★ Adyman",id:"1042949262713049099",avatar:"55.webp"},
+    {name:"—͟͟͞͞★ Vanilla-a",id:"860281942787883009",avatar:"46.webp"},
+    {name:"—͟͟͞͞★ BUBBLES 🌸",id:"1286816187606503565",avatar:"45.webp"},
+    {name:"—͟͟͞͞★ Lewzir_㉿ze",id:"1327763338251472896",avatar:"110.webp"},
+    {name:"—͟͟͞͞★ 𝚳𝚨𝚻R𝚬𝚬𝚾 . Fx",id:"1469841659318632589",avatar:"222.png"},
+    {name:"—͟͟͞͞★ Kitty 🤍",id:"1190313128660049963",avatar:"47.webp"},
+    {name:"—͟͟͞͞★ ICE🧚🏼‍♀️",id:"1437960630798778501",avatar:"42.webp"},
+    {name:"—͟͟͞͞★ Her",id:"1314214227191533621",avatar:"51.webp"},
+    {name:"—͟͟͞͞★ FORLAN",id:"1319843461410848839",avatar:"52.webp"},
+    {name:"—͟͟͞͞★ Adeline 🌸",id:"886364060415823964",avatar:"53.webp"},
+    {name:"—͟͟͞͞★ Liaren",id:"1428108487367594187",avatar:"54.webp"},
+    {name:"—͟͟͞͞★ Ragnarr",id:"776324852830699571",avatar:"50.webp"},
+    {name:"—͟͟͞͞★ Red-Adil22",id:"774041754281443338",avatar:"49.webp"},
+    {name:"—͟͟͞͞★ Warrior",id:"689086011405631494",avatar:"48.webp"},
+    {name:"—͟͟͞͞★ CARLA🌺",id:"1257811472734490685",avatar:"56.webp"}
+];
+
+const grid = document.getElementById('clanMembersGrid');
+if(grid) {
+    membersList.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'member-card';
+        card.onclick = () => window.open(`https://discord.com/users/${m.id}`, '_blank');
+        card.innerHTML = `
+            <img src="${m.avatar}" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+            <span style="color:var(--primary); font-size:12px; font-weight:bold; display:block; margin-bottom:10px;">ELITE MEMBER</span>
+            <div style="font-weight:bold;">${m.name}</div>
+        `;
+        grid.appendChild(card);
+    });
+}
+</script>
+</body>
+</html>
